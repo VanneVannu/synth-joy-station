@@ -6,9 +6,8 @@ let osciladorAmbiente = null;
 let tieneCredito = false;
 let contadorCreditosTotales = 0; 
 
-// CONFIGURACIÓN CENTRAL DE BASE DE DATOS GLOBAL REAL DE GOOGLE (INMUNE A CORS)
-const URL_FIREBASE_NUBE = "https://synth-joy-station-default-rtdb.firebaseio.com/";
-
+// CONFIGURACIÓN CENTRAL DE BASE DE DATOS GLOBAL REAL DE GOOGLE (DIRECCIÓN OFICIAL CON EXTENSIÓN)
+const URL_FIREBASE_NUBE = "https://firebaseio.com";
 
 // Efecto de sonido retro "¡Clink!" de moneda + activación de la cabina
 function insertarMoneda() {
