@@ -19,10 +19,18 @@
     <header id="marquesina-synth">
       <div class="marcadores-arcade">
         <span class="marcador-1up">1UP 0000</span>
+        <!-- REPARADO: Conectamos este marcador con el ID del sistema de créditos local -->
         <span class="marcador-creditos" id="txt-creditos">CREDITS 00</span>
       </div>
       
-      <!-- Botón que simula la ranura de monedas física -->
+      <!-- INTEGRADO: Caja del Perfil del Piloto al lado de los botones de control -->
+      <div class="hud-perfil-header">
+        <span class="etiqueta-neon-mini">PILOT:</span>
+        <span id="label-pilot-name" class="valor-neon-mini">GUEST_USER 🦊</span>
+        <button class="btn-terminal-mini" onclick="abrirPanelConfigPerfil()">[MOD_ID]</button>
+      </div>
+      
+      <!-- REPARADO: El botón de insertar moneda ahora llama a tu motor de economía local -->
       <button id="boton-audio" onclick="insertarMoneda()">🪙 INSERT COIN</button>
       
       <div class="luces-ecualizador" id="eq-luces">
@@ -33,10 +41,31 @@
       <p class="subtitulo-synth">SELECT YOUR RETRO-DIGITAL CHALLENGE</p>
     </header>
 
+    <!-- VENTANA EMERGENTE (MODAL): REGISTRO DE PERFIL PILOTO -->
+    <div id="modal-perfil-arcade" class="modal-neon oculto">
+      <div class="modal-contenido">
+        <h3 class="subtitulo-arcade">&gt;&gt; ACCESS_REQUISITION: PILOT REGISTRATION</h3>
+        <div class="campo-formulario">
+          <label for="input-perfil-alias">ENTER PROTOCOL ALIAS:</label>
+          <input type="text" id="input-perfil-alias" placeholder="CYBER_RIDER" maxlength="12">
+        </div>
+        <div class="campo-formulario">
+          <label>SELECT MATRIX AVATAR:</label>
+          <div class="selector-avatares">
+            <span class="avatar-pixel" onclick="seleccionarAvatarLocal('🦊')">🦊</span>
+            <span class="avatar-pixel" onclick="seleccionarAvatarLocal('🤖')">🤖</span>
+            <span class="avatar-pixel" onclick="seleccionarAvatarLocal('👾')">👾</span>
+            <span class="avatar-pixel" onclick="seleccionarAvatarLocal('🐱')">🐱</span>
+          </div>
+        </div>
+        <button class="btn-modo-arcade" onclick="guardarPerfilPilotoLocal()">💾 CONFIRM PROTOCOL</button>
+      </div>
+    </div>
+
     <!-- REJILLA CENTRAL: SELECCIÓN DE JUEGO (CHARACTER/STAGE SELECT) -->
     <main id="rejilla-canales">
 
-      <!-- JUEGO 1: AJEDREZ MULTIJUGADOR -->
+      <!-- STAGE 01: CYBER CHESS -->
       <a href="https://breakmates-chess.onrender.com" target="_blank" class="modulo-canal ajedrez" onclick="sonarClick(event, this)">
         <div class="borde-brillante"></div>
         <div class="contenido-canal">
@@ -47,7 +76,7 @@
         </div>
       </a>
 
-      <!-- JUEGO 2: NEONHACKMAZE -->
+      <!-- STAGE 02: NEON HACK MAZE -->
       <a href="https://neon-hack-maze.onrender.com" target="_blank" class="modulo-canal maze" onclick="sonarClick(event, this)">
         <div class="borde-brillante"></div>
         <div class="contenido-canal">
@@ -58,23 +87,11 @@
         </div>
       </a>
 
-      <!-- CANAL 3: ¡AHORA DESBLOQUEADO CON CYBER PONG! -->
-      <a href="https://cyber-pong-neon.onrender.com" target="_blank" class="modulo-canal maze" onclick="sonarClick(event, this)">
-        <div class="borde-brillante"></div>
-        <div class="contenido-canal">
-          <span class="frecuencia-hz">STAGE 03 // VECTOR PROTOCOL</span>
-          <h2>🏓 CYBER PONG NEON</h2>
-          <p class="desc-canal">Batalla de vectores de velocidad progresiva con IA cognitiva, multijugador local y red online P2P.</p>
-          <div class="indicador-senal online">READY PLAYER 1</div>
-        </div>
-      </a>
-
-
-      <!-- RANURA BLOQUEADA -->
+      <!-- RANURA BLOQUEADA (PRÓXIMAMENTE CYBER PONG) -->
       <div class="modulo-canal slot-vacio">
         <div class="borde-brillante"></div>
         <div class="contenido-canal">
-          <span class="frecuencia-hz">STAGE 04 // LOCKER</span>
+          <span class="frecuencia-hz">STAGE 03 // LOCKER</span>
           <h2>🔒 MUTED NODE</h2>
           <p class="desc-canal">Ranura de audio digital vacía. Sintetizando nuevos algoritmos de entretenimiento.</p>
           <div class="indicador-senal offline">INSERT COIN</div>
@@ -83,6 +100,45 @@
 
     </main>
 
+    <!-- ===================================================
+         INTEGRADO: COMPAÑERO COGNITIVO IA (CYBER-FOX)
+         =================================================== -->
+    <div id="ia-companion-container">
+      <div id="ia-holograma-cuerpo" class="holograma-respirando" onclick="despertarVozIaCompanion()">
+        <div id="ia-rostro-pixel">🐰</div>
+        <div class="ia-lineas-pulso"></div>
+      </div>
+      
+      <div id="ia-consola-dialogo" class="consola-ia-cerrada">
+        <div class="ia-header">🐰 CYBER_RABBIT_CORE v1.0</div>
+        <div id="ia-output-texto">SYSTEM_READY: Awaiting database interrogation...</div>
+        <div class="ia-input-area">
+          <input type="text" id="input-query-ia" placeholder="Pregúntale al zorro virtual..." onkeypress="evaluarTeclaIa(event)">
+          <button onclick="procesarConsultaIaLocal()">SEND</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================
+         INTEGRADO: TERMINAL DE SUGERENCIAS Y OPINIONES
+         =================================================== -->
+    <div id="seccion-feedback-gabinete">
+      <h2 class="titulo-neon-mini">BUG REPORT & SUGGESTION TERMINAL</h2>
+      <p class="subtitulo-mini">Direct link to system architecture compiler</p>
+      
+      <div class="logs-opiniones-contenedor" id="lista-logs-opiniones">
+        <div class="log-item system-log">[SYSTEM]: Main feedback lines established. Terminal active.</div>
+      </div>
+
+      <div class="formulario-feedback-consola">
+        <textarea id="texto-feedback-usuario" placeholder="Ingresa tus observaciones, bugs detectados o nuevas ideas de juego..." maxlength="250" oninput="actualizarContadorBytes()"></textarea>
+        <div class="barra-acciones-feedback">
+          <span id="char-counter-feedback">0 / 250 BYTES</span>
+          <button class="btn-modo-arcade" onclick="inyectarOpinionLocal()">🚀 INJECT PROTOCOL</button>
+        </div>
+      </div>
+    </div>
+    
     <!-- PIE DE LA CABINA: TABLERO DE MANDOS FÍSICO -->
     <footer id="panel-controles">
       <div class="tablero-palancas">
@@ -93,88 +149,9 @@
 
   </div>
 
-  <!-- CONTROLADORES DE AUDIO Y LOGICA ARCADE -->
-  <script>
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    let osciladorAmbiente = null;
-    let tieneCredito = false;
+  <!-- Enlazamos las nuevas funciones inteligentes de la cabina -->
+  <script src="app-station.js"></script>
 
-    // Efecto de sonido retro "¡Clink!" de moneda + activación del sistema
-    function insertarMoneda() {
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      
-      // Sonido de moneda: Dos pitidos metálicos rápidos hacia arriba
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(987.77, audioCtx.currentTime); // Nota Si5
-      osc.frequency.setValueAtTime(1318.51, audioCtx.currentTime + 0.08); // Nota Mi6 rápido
-      
-      gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
-      
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.25);
-
-      // Cambios visuales en la cabina
-      document.getElementById('txt-creditos').innerText = "CREDITS 01";
-      document.getElementById('txt-creditos').classList.add('con-credito');
-      document.getElementById('boton-audio').innerText = "🎮 PRESS START";
-      document.getElementById('boton-audio').classList.add('activo');
-      document.getElementById('eq-luces').classList.add('animando');
-      
-      // Encender el zumbido Synth de fondo si no estaba encendido
-      if (!tieneCredito) {
-        activarZumbidoSynth();
-        tieneCredito = true;
-      }
-    }
-
-    function activarZumbidoSynth() {
-      osciladorAmbiente = audioCtx.createOscillator();
-      const gainNode = audioCtx.createGain();
-      osciladorAmbiente.type = 'sawtooth'; 
-      osciladorAmbiente.frequency.setValueAtTime(55, audioCtx.currentTime); // Tono grave cyberpunk
-      gainNode.gain.setValueAtTime(0.015, audioCtx.currentTime); // Suave
-      
-      const filter = audioCtx.createBiquadFilter();
-      filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(110, audioCtx.currentTime);
-
-      osciladorAmbiente.connect(filter);
-      filter.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
-      osciladorAmbiente.start();
-    }
-
-    // Efecto de botón arcade al presionar un juego (Bloquea la salida si no hay moneda)
-    function sonarClick(event, elemento) {
-      if (!tieneCredito) {
-        event.preventDefault(); // Evita que abra el juego si no echó moneda
-        alert("🚨 INSERT COIN REQUIRED TO PLAY!");
-        return;
-      }
-
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      
-      // Sonido clásico de disparo/inicio de juego láser
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.3); // Cae el tono
-      
-      gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
-      
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.3);
-    }
-  </script>
 </body>
 </html>
 
