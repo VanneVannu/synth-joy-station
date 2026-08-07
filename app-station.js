@@ -5,6 +5,7 @@
 // CONFIGURACIÓN CENTRAL DE BASE DE DATOS GLOBAL REAL DE GOOGLE (URL EXACTA DE TU PROYECTO)
 const URL_FIREBASE_NUBE = "https://synth-joy-station-default-rtdb.firebaseio.com/.json";
 
+
 // REPARADO: Candado de seguridad para evitar errores de identificador ya declarado
 if (typeof window.audioCtx === 'undefined') {
     window.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -400,7 +401,9 @@ function cerrarModalAdmin() {
     document.getElementById('input-pass-admin').value = '';
 }
 
-// LOGIN DEL ADMINISTRADOR: Desbloquea la consola con la cryptokey maestra
+// Variable global de respaldo para restaurar tus datos al salir del modo Root
+window.respaldoAliasPilotoViejo = "";
+
 function verificarAccesoAdminLocal() {
     const password = document.getElementById('input-pass-admin').value;
     
@@ -412,7 +415,21 @@ function verificarAccesoAdminLocal() {
         document.getElementById('rejilla-canales').classList.add('oculto');
         document.getElementById('seccion-feedback-gabinete').classList.add('oculto');
         
+        // Desplegamos el panel oculto del Administrador
         document.getElementById('panel-core-admin').classList.remove('oculto');
+        
+        // CAMBIO DE AUTORIDAD EN EL HUD: Respaldamos tu alias y mutamos la marquesina
+        const elementoHUD = document.getElementById('label-pilot-name');
+        if (elementoHUD) {
+            window.respaldoAliasPilotoViejo = elementoHUD.innerText; // Guardamos "FOXXIE 🦊"
+            
+            // Inyectamos el rol con máxima autoridad y cambiamos el estilo visual temporalmente
+            elementoHUD.innerText = "ROOT_ADMIN // 👑";
+            elementoHUD.style.color = "#ffcc00"; // Cambia a amarillo de advertencia del sistema
+            elementoHUD.style.textShadow = "0 0 10px #ffcc00";
+        }
+        
+        // Descargamos los mensajes en vivo desde internet
         descargarMensajesDesdeNubeGlobal();
     } else {
         sonarTonoMiniRetro(100, 0.3);
@@ -420,6 +437,7 @@ function verificarAccesoAdminLocal() {
         cerrarModalAdmin();
     }
 }
+
 
 // DESCARGA EN VIVO DESDE GOOGLE: Trae los reportes guardados por otros usuarios en el mundo
 function descargarMensajesDesdeNubeGlobal() {
@@ -504,7 +522,16 @@ function cerrarPanelAdministradorGlobal() {
     document.getElementById('rejilla-canales').classList.remove('oculto');
     document.getElementById('seccion-feedback-gabinete').classList.remove('oculto');
     document.getElementById('input-pass-admin').value = '';
+    
+    // RESTAURACIÓN DE AUTORIDAD: Devolvemos el control al piloto original
+    const elementoHUD = document.getElementById('label-pilot-name');
+    if (elementoHUD && window.respaldoAliasPilotoViejo) {
+        elementoHUD.innerText = window.respaldoAliasPilotoViejo; // Restaura "FOXXIE 🦊"
+        elementoHUD.style.color = "#00ff66"; // Regresa a su color verde neón original
+        elementoHUD.style.textShadow = "0 0 8px rgba(0, 255, 102, 0.5)";
+    }
 }
+
 
 // ANIMACIONES INTEGRALES DE LAS 4 ESPECIES PARA EL CONEJO VIVO
 function iniciarAnimacionesAleatoriasIa() {
