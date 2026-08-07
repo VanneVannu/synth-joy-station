@@ -426,28 +426,32 @@ function descargarMensajesDesdeNubeGlobal() {
     if (!contenedor) return;
     contenedor.innerHTML = `<div style="color: #ffcc00; font-family: monospace;">[CONNECTING]: Fetching core database streams...</div>`;
 
+    // REPARADO: Consultamos directamente el ID del canal unificado
     fetch(`https://restfulapi.dev{ID_CANAL_GLOBAL_NUBE}`)
         .then(res => res.json())
         .then(coleccion => {
             contenedor.innerHTML = "";
             
+            // Verificación estricta de datos entrantes de la API
             if (!coleccion || coleccion.length === 0) {
                 contenedor.innerHTML = `<div style="color: rgba(255,255,255,0.4); font-family: monospace;">[EMPTY]: No transmissions detected in this node yet.</div>`;
                 return;
             }
 
-            // Recorremos la base de datos distribuida y pintamos cada reporte en tarjetas limpias
+            // Recorremos la base de datos distribuida
             coleccion.forEach((item) => {
-                if (item.data && item.data.mensaje) {
-                    const info = item.data;
+                // REPARADO: Acceso de doble envoltorio estricto de la API (item.data.data)
+                if (item.data && item.data.data && item.data.data.mensaje) {
+                    const info = item.data.data; // Capturamos el sub-nodo real enviado
                     const tarjeta = document.createElement('div');
-                    tarjeta.style.borderBottom = "1px dashed #ffcc00";
+                    tarjeta.style.borderBottom = "1px dashed rgba(255, 204, 0, 0.3)";
                     tarjeta.style.paddingBottom = "8px";
                     tarjeta.style.marginBottom = "8px";
                     tarjeta.style.fontFamily = "monospace";
                     tarjeta.style.fontSize = "0.85rem";
                     tarjeta.style.color = "#fff";
                     
+                    // Formateamos la hora si está disponible
                     tarjeta.innerHTML = `
                         <span style="color: #ffcc00; font-weight: bold;">[PILOTO]: ${info.piloto || 'ANÓNIMO'} ${info.avatar || ''}</span><br>
                         <span style="color: #00ff66;">[MSG]:</span> ${info.mensaje}
@@ -455,6 +459,11 @@ function descargarMensajesDesdeNubeGlobal() {
                     contenedor.appendChild(tarjeta);
                 }
             });
+
+            // Si después de filtrar el envoltorio el panel quedó vacío
+            if (contenedor.innerHTML === "") {
+                contenedor.innerHTML = `<div style="color: rgba(255,255,255,0.4); font-family: monospace;">[EMPTY]: No valid messages found in this data segment.</div>`;
+            }
         })
         .catch(() => {
             contenedor.innerHTML = `<div style="color: #ff0055;">[ERROR]: Cloud node unreachable. Check firewall.</div>`;
