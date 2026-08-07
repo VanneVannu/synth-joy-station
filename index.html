@@ -19,25 +19,24 @@
     <header id="marquesina-synth">
       <div class="marcadores-arcade">
         <span class="marcador-1up">1UP 0000</span>
-        <!-- REPARADO: Conectamos este marcador con el ID del sistema de créditos local -->
         <span class="marcador-creditos" id="txt-creditos">CREDITS 00</span>
       </div>
       
-      <!-- INTEGRADO: Caja del Perfil del Piloto al lado de los botones de control -->
+      <!-- HUD DEL PERFIL DE PILOTO -->
       <div class="hud-perfil-header">
         <span class="etiqueta-neon-mini">PILOT:</span>
         <span id="label-pilot-name" class="valor-neon-mini">GUEST_USER 🦊</span>
         <button class="btn-terminal-mini" onclick="abrirPanelConfigPerfil()">[MOD_ID]</button>
       </div>
       
-      <!-- REPARADO: El botón de insertar moneda ahora llama a tu motor de economía local -->
       <button id="boton-audio" onclick="insertarMoneda()">🪙 INSERT COIN</button>
       
       <div class="luces-ecualizador" id="eq-luces">
         <span></span><span></span><span></span><span></span><span></span>
       </div>
       
-      <h1 class="titulo-synth">SYNTH JOY STATION</h1>
+      <!-- PUERTA SECRETA: Al hacerle clic 5 veces al título, despertará el panel de administrador -->
+      <h1 class="titulo-synth" onclick="registrarClicAdmin_Secreto()" style="cursor: pointer; user-select: none;">SYNTH JOY STATION</h1>
       <p class="subtitulo-synth">SELECT YOUR RETRO-DIGITAL CHALLENGE</p>
     </header>
 
@@ -62,11 +61,25 @@
       </div>
     </div>
 
-    <!-- REJILLA CENTRAL: SELECCIÓN DE JUEGO (CHARACTER/STAGE SELECT) -->
-    <main id="rejilla-canales">
+    <!-- VENTANA EMERGENTE SECRETA: LOGIN DE ADMINISTRADOR -->
+    <div id="modal-login-admin" class="modal-neon oculto">
+      <div class="modal-contenido" style="border-color: #ffcc00; box-shadow: 0 0 25px rgba(255, 204, 0, 0.4);">
+        <h3 class="subtitulo-arcade" style="color: #ffcc00; border-color: rgba(255, 204, 0, 0.3);">&gt;&gt; SECURITY_OVERRIDE: ADMIN TERMINAL</h3>
+        <div class="campo-formulario">
+          <label for="input-pass-admin">ENTER DECRYPTION CRYPTOKEY:</label>
+          <input type="password" id="input-pass-admin" placeholder="••••••••" style="border-color: #ffcc00;">
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn-modo-arcade" style="border-color: #ffcc00; color: #ffcc00; flex: 1;" onclick="verificarAccesoAdminLocal()">🖥️ ACCESS</button>
+          <button class="btn-modo-arcade" style="border-color: #ff0055; color: #ff0055; flex: 1;" onclick="cerrarModalAdmin()">[ABORT]</button>
+        </div>
+      </div>
+    </div>
 
+    <!-- PANTALLA PRINCIPAL: REJILLA DE JUEGOS ACCESIBLES -->
+    <main id="rejilla-canales">
       <!-- STAGE 01: CYBER CHESS -->
-      <a href="https://breakmates-chess.onrender.com" target="_blank" class="modulo-canal ajedrez" onclick="sonarClick(event, this)">
+      <a href="https://onrender.com" target="_blank" class="modulo-canal ajedrez" onclick="sonarClick(event, this)">
         <div class="borde-brillante"></div>
         <div class="contenido-canal">
           <span class="frecuencia-hz">STAGE 01 // CYBER BATTLE</span>
@@ -77,7 +90,7 @@
       </a>
 
       <!-- STAGE 02: NEON HACK MAZE -->
-      <a href="https://neon-hack-maze.onrender.com" target="_blank" class="modulo-canal maze" onclick="sonarClick(event, this)">
+      <a href="https://onrender.com" target="_blank" class="modulo-canal maze" onclick="sonarClick(event, this)">
         <div class="borde-brillante"></div>
         <div class="contenido-canal">
           <span class="frecuencia-hz">STAGE 02 // VIRTUAL MAZE</span>
@@ -87,34 +100,31 @@
         </div>
       </a>
 
-      <!-- STAGE 3: ¡AHORA DESBLOQUEADO CON CYBER PONG! -->
-      <a href="https://cyber-pong-neon.onrender.com" target="_blank" class="modulo-canal maze" onclick="sonarClick(event, this)">
+      <!-- STAGE 03: REPARADO Y ACTIVADO CON TU CYBER PONG DEFINITIVO -->
+      <a href="https://onrender.com" target="_blank" class="modulo-canal pong" id="slot-pong-real" onclick="sonarClick(event, this)">
         <div class="borde-brillante"></div>
         <div class="contenido-canal">
-          <span class="frecuencia-hz">STAGE 03 // VECTOR PROTOCOL</span>
+          <span class="frecuencia-hz">STAGE 03 // VECTOR ARENA</span>
           <h2>🏓 CYBER PONG NEON</h2>
-          <p class="desc-canal">Batalla de vectores de velocidad progresiva con IA cognitiva y multijugador local.</p>
+          <p class="desc-canal">Combates de vectores retro a 60 FPS con Inteligencia Artificial militar adaptativa integrada.</p>
           <div class="indicador-senal online">READY PLAYER 1</div>
         </div>
       </a>
-
-
-      <!-- RANURA BLOQUEADA (PRÓXIMAMENTE) -->
-      <div class="modulo-canal slot-vacio">
-        <div class="borde-brillante"></div>
-        <div class="contenido-canal">
-          <span class="frecuencia-hz">STAGE 04 // LOCKER</span>
-          <h2>🔒 MUTED NODE</h2>
-          <p class="desc-canal">Ranura de audio digital vacía. Sintetizando nuevos algoritmos de entretenimiento.</p>
-          <div class="indicador-senal offline">INSERT COIN</div>
-        </div>
-      </div>
-
     </main>
 
-    <!-- ===================================================
-         INTEGRADO: COMPAÑERO COGNITIVO IA (CYBER-FOX)
-         =================================================== -->
+    <!-- PANTALLA EXCLUSIVA DE ADMINISTRADOR (OCULTA POR DEFECTO) -->
+    <main id="panel-core-admin" class="oculto" style="display: flex; flex-direction: column; gap: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ffcc00; padding-bottom: 10px;">
+        <h2 style="color: #ffcc00; font-size: 1.8rem; text-shadow: 0 0 10px #ffcc00;">🖥️ SYSTEM_CORE: INCOMING TRANSMISSIONS</h2>
+        <button class="btn-modo-arcade" style="border-color: #ff0055; color: #ff0055;" onclick="cerrarPanelAdministradorGlobal()">[CLOSE CONSOLE]</button>
+      </div>
+      <div id="contenedor-mensajes-nube" style="background: #08030f; border: 1px solid #ffcc00; border-radius: 6px; min-height: 300px; max-height: 450px; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px;">
+        <!-- Aquí se descargarán en tiempo real los mensajes enviados desde cualquier PC del mundo -->
+        <div style="color: rgba(255,204,0,0.5); font-family: monospace;">[SYSTEM]: Downloading global data streams...</div>
+      </div>
+    </main>
+
+    <!-- COMPAÑERO COGNITIVO IA (WHITE RABBIT CORE) -->
     <div id="ia-companion-container">
       <div id="ia-holograma-cuerpo" class="holograma-respirando" onclick="despertarVozIaCompanion()">
         <div id="ia-rostro-pixel">🐰</div>
@@ -122,31 +132,29 @@
       </div>
       
       <div id="ia-consola-dialogo" class="consola-ia-cerrada">
-        <div class="ia-header">🐰 CYBER_RABBIT_CORE v1.0</div>
-        <div id="ia-output-texto">SYSTEM_READY: Awaiting database interrogation...</div>
+        <div class="ia-header">🐰 WHITE_RABBIT_CORE v1.0</div>
+        <div id="ia-output-texto">SYSTEM_READY: Sigue al conejo blanco... Interrogation lines open. (Pregúntame en Español o Inglés).</div>
         <div class="ia-input-area">
-          <input type="text" id="input-query-ia" placeholder="Pregúntale a WhiteRabbit..." onkeypress="evaluarTeclaIa(event)">
+          <input type="text" id="input-query-ia" placeholder="Pregúntale al zorro virtual..." onkeypress="evaluarTeclaIa(event)">
           <button onclick="procesarConsultaIaLocal()">SEND</button>
         </div>
       </div>
     </div>
 
-    <!-- ===================================================
-         INTEGRADO: TERMINAL DE SUGERENCIAS Y OPINIONES
-         =================================================== -->
+    <!-- TERMINAL DE SUGERENCIAS Y OPINIONES EN LA NUBE -->
     <div id="seccion-feedback-gabinete">
       <h2 class="titulo-neon-mini">BUG REPORT & SUGGESTION TERMINAL</h2>
-      <p class="subtitulo-mini">Direct link to system architecture compiler</p>
+      <p class="subtitulo-mini">Direct link to system architecture compiler (GLOBAL CLOUD TRANSMISSION)</p>
       
       <div class="logs-opiniones-contenedor" id="lista-logs-opiniones">
-        <div class="log-item system-log">[SYSTEM]: Main feedback lines established. Terminal active.</div>
+        <div class="log-item system-log">[SYSTEM]: Main feedback lines established. Global cloud stream synchronized.</div>
       </div>
 
       <div class="formulario-feedback-consola">
         <textarea id="texto-feedback-usuario" placeholder="Ingresa tus observaciones, bugs detectados o nuevas ideas de juego..." maxlength="250" oninput="actualizarContadorBytes()"></textarea>
         <div class="barra-acciones-feedback">
           <span id="char-counter-feedback">0 / 250 BYTES</span>
-          <button class="btn-modo-arcade" onclick="inyectarOpinionLocal()">🚀 INJECT PROTOCOL</button>
+          <button class="btn-modo-arcade" onclick="inyectarOpinionNubeGlobal()">🚀 INJECT PROTOCOL</button>
         </div>
       </div>
     </div>
@@ -161,9 +169,7 @@
 
   </div>
 
-  <!-- Enlazamos las nuevas funciones inteligentes de la cabina -->
   <script src="app-station.js"></script>
-
 </body>
 </html>
 
