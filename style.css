@@ -77,6 +77,48 @@ body {
   animation: pulsoGlow 0.4s infinite alternate;
 }
 
+/* INTEGRACIÓN: DISEÑO MINI HUD DEL PERFIL DE PILOTO */
+.hud-perfil-header {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(37, 18, 66, 0.6);
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 242, 254, 0.3);
+}
+
+.etiqueta-neon-mini {
+  font-size: 0.75rem;
+  color: rgba(0, 242, 254, 0.7);
+  letter-spacing: 1px;
+}
+
+.valor-neon-mini {
+  font-size: 0.85rem;
+  color: #00ff66;
+  font-weight: bold;
+  text-shadow: 0 0 8px rgba(0, 255, 102, 0.5);
+}
+
+.btn-terminal-mini {
+  background: transparent;
+  border: none;
+  color: #ff007f;
+  font-family: monospace;
+  font-size: 0.75rem;
+  cursor: pointer;
+  font-weight: bold;
+  transition: color 0.2s ease;
+}
+
+.btn-terminal-mini:hover {
+  color: #00f2fe;
+}
+
 .titulo-synth {
   font-size: 3.2rem;
   color: #00f2fe;
@@ -120,6 +162,7 @@ body {
   box-shadow: 0 0 15px #00ff88;
   animation: parpadeoArcade 1s infinite steps(2);
 }
+
 
 /* REJILLA DE JUEGOS */
 #rejilla-canales {
@@ -262,4 +305,329 @@ body {
 @keyframes pulsoGlow {
   0% { text-shadow: 0 0 5px #ffcc00; }
   100% { text-shadow: 0 0 15px #ffcc00; }
+}
+
+/* ===================================================
+   DISEÑO DE VENTANAS EMERGENTES (MODALES NEÓN PILOTO)
+   =================================================== */
+.modal-neon {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(8, 3, 15, 0.85);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  transition: all 0.3s ease;
+}
+
+.modal-contenido {
+  background: #180c2b;
+  border: 3px solid #00f2fe;
+  box-shadow: 0 0 25px rgba(0, 242, 254, 0.5), inset 0 0 15px rgba(0, 242, 254, 0.2);
+  padding: 30px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 450px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.subtitulo-arcade {
+  font-size: 1.1rem;
+  color: #ff007f;
+  letter-spacing: 1px;
+  border-bottom: 1px dashed rgba(255, 0, 127, 0.4);
+  padding-bottom: 8px;
+}
+
+.campo-formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.campo-formulario label {
+  font-size: 0.85rem;
+  color: #bfa7db;
+  letter-spacing: 1px;
+}
+
+.campo-formulario input {
+  background: #0d061f;
+  border: 1px solid #3d2366;
+  padding: 10px;
+  color: #fff;
+  border-radius: 4px;
+  font-size: 1rem;
+  letter-spacing: 1px;
+}
+
+.campo-formulario input:focus {
+  outline: none;
+  border-color: #00f2fe;
+  box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
+}
+
+.selector-avatares {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 5px;
+}
+
+.avatar-pixel {
+  font-size: 1.8rem;
+  cursor: pointer;
+  border: 2px solid transparent;
+  padding: 6px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.avatar-pixel:hover {
+  transform: scale(1.15);
+  background: rgba(0, 242, 254, 0.1);
+}
+
+.btn-modo-arcade {
+  background: #251242;
+  border: 2px solid #00ff66;
+  color: #00ff66;
+  padding: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 4px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+}
+
+.btn-modo-arcade:hover {
+  background: #00ff66;
+  color: #000;
+  box-shadow: 0 0 15px #00ff66;
+}
+
+/* ===================================================
+   NIDO HOLOGRÁFICO DEL ASISTENTE IA (WHITE RABBIT CORE)
+   =================================================== */
+#ia-companion-container {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 15px;
+  z-index: 50;
+}
+
+#ia-holograma-cuerpo {
+  width: 65px;
+  height: 65px;
+  background: #180c2b;
+  border: 2px solid #00ff66;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  box-shadow: 0 0 15px #00ff66;
+  transition: all 0.3s ease;
+}
+
+#ia-holograma-cuerpo:hover {
+  transform: scale(1.08) rotate(5deg);
+}
+
+#ia-rostro-pixel {
+  font-size: 2.2rem;
+  user-select: none;
+}
+
+.holograma-respirando {
+  animation: respirarHolograma 2.5s infinite alternate ease-in-out;
+}
+
+/* Ventana de Diálogo Flotante */
+#ia-consola-dialogo {
+  background: #11081f;
+  border: 2px solid #ffcc00;
+  box-shadow: 0 0 20px rgba(255, 204, 0, 0.3);
+  border-radius: 8px;
+  width: 320px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.consola-ia-cerrada {
+  opacity: 0;
+  transform: translateY(20px) scale(0.8);
+  pointer-events: none;
+  height: 0;
+}
+
+.consola-ia-abierta {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.ia-header {
+  background: #ffcc00;
+  color: #000;
+  font-weight: bold;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+}
+
+#ia-output-texto {
+  padding: 15px;
+  font-size: 0.9rem;
+  color: #f7ebff;
+  line-height: 1.4;
+  min-height: 70px;
+  border-bottom: 1px solid #251242;
+}
+
+.ia-input-area {
+  display: flex;
+  background: #0d061f;
+}
+
+.ia-input-area input {
+  background: transparent;
+  border: none;
+  padding: 10px;
+  color: #fff;
+  flex-grow: 1;
+  font-size: 0.85rem;
+}
+
+.ia-input-area input:focus {
+  outline: none;
+}
+
+.ia-input-area button {
+  background: transparent;
+  border: none;
+  color: #ffcc00;
+  padding: 0 15px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+}
+
+.ia-input-area button:hover {
+  background: rgba(255, 204, 0, 0.1);
+}
+
+/* ===================================================
+   TERMINAL DE SUGERENCIAS Y BITÁCORA MILITAR (LOGS)
+   =================================================== */
+#seccion-feedback-gabinete {
+  background: rgba(13, 6, 31, 0.7);
+  border: 2px solid #ff007f;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 0 15px rgba(255, 0, 127, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.titulo-neon-mini {
+  font-size: 1.3rem;
+  color: #ff007f;
+  text-shadow: 0 0 8px rgba(255, 0, 127, 0.6);
+  letter-spacing: 2px;
+}
+
+.subtitulo-mini {
+  font-size: 0.8rem;
+  color: #9d7cb8;
+  letter-spacing: 1px;
+  margin-top: -10px;
+}
+
+.logs-opiniones-contenedor {
+  background: #08030f;
+  border: 1px solid #3d2366;
+  border-radius: 4px;
+  height: 150px;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.log-item {
+  font-family: monospace;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  letter-spacing: 0.5px;
+  border-bottom: 1px dashed rgba(61, 35, 102, 0.3);
+  padding-bottom: 4px;
+}
+
+.system-log {
+  color: rgba(0, 242, 254, 0.6);
+}
+
+.formulario-feedback-consola {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.formulario-feedback-consola textarea {
+  background: #08030f;
+  border: 1px solid #3d2366;
+  border-radius: 4px;
+  padding: 12px;
+  color: #fff;
+  font-size: 0.9rem;
+  resize: none;
+  height: 70px;
+}
+
+.formulario-feedback-consola textarea:focus {
+  outline: none;
+  border-color: #ff007f;
+  box-shadow: 0 0 8px rgba(255, 0, 127, 0.3);
+}
+
+.barra-acciones-feedback {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#char-counter-feedback {
+  font-size: 0.8 / BYTES;
+  color: rgba(0, 255, 102, 0.5);
+  font-family: monospace;
+}
+
+/* UTILIDAD GLOBAL COMÚN */
+.oculto {
+  display: none !important;
+}
+
+/* @KEYFRAMES COMPLEMENTARIOS */
+@keyframes respirarHolograma {
+  0% { transform: translateY(0); filter: brightness(0.9); }
+  100% { transform: translateY(-8px); filter: brightness(1.2); }
 }
