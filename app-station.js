@@ -279,7 +279,7 @@ function evaluarTeclaIa(e) {
     if (e.key === 'Enter') procesarConsultaIaLocal(); 
 }
 
-// CEREBRO DE EXPRESIONES REGULARES NATIVO (PERSONALIDAD HÍBRIDA)
+// CEREBRO COGNITIVO BILINGÜE (DETECCIÓN AUTOMÁTICA ESPAÑOL / INGLÉS)
 function procesarConsultaIaLocal() {
     const input = document.getElementById('input-query-ia');
     const output = document.getElementById('ia-output-texto');
@@ -291,25 +291,44 @@ function procesarConsultaIaLocal() {
     sonarTonoMiniRetro(300, 0.08);
 
     setTimeout(() => {
-        let respuesta = "ERROR_404: Command or protocol unknown. Rephrase your interrogation lines.";
+        // Mensaje de error de respaldo (Detecta si el usuario está intentando hablar en español o inglés)
+        let esQueryEspanol = query.includes('hola') || query.includes('juego') || query.includes('como') || query.includes('que') || query.includes('moneda');
+        let respuesta = esQueryEspanol 
+            ? "ERROR_404: Comando o protocolo desconocido. Replantea tus líneas de interrogación."
+            : "ERROR_404: Command or protocol unknown. Rephrase your interrogation lines.";
 
-        // Respuestas que mezclan las 4 personalidades (Misterio, Militar, Críptico y Cortafuegos)
-        if (query.includes('hola') || query.includes('saludo') || query.includes('quien eres')) {
-            respuesta = "REPLY: I am WHITE_RABBIT_CORE v1.0. A composite cognitive matrix. I watch you like a cat, scan you like a raven, guide you like a rabbit, and defend this station like a shark.";
+        // ==========================================
+        // DICCIONARIO BLOQUE A: RESPUESTAS EN ESPAÑOL
+        // ==========================================
+        if (query.includes('hola') || query.includes('saludo') || query.includes('quien eres') || query.includes('quién eres')) {
+            respuesta = "RESPUESTA: Soy WHITE_RABBIT_CORE v1.0. Una matriz cognitiva artificial programada para monitorear Synth Joy Station. Te vigilo como un gato, te escaneo como un cuervo, te guío como un conejo y defiendo este gabinete como un tiburón.";
         } 
         else if (query.includes('chess') || query.includes('ajedrez')) {
-            respuesta = "STAGE_01_DATA (RAVEN_SCAN): Cyber Chess detected. A high-altitude vector warzone. Deploying strategic protocols requires 01 coin.";
+            respuesta = "DATOS_STAGE_01 (ESCANEO_CUERVO): Cyber Chess detectado. Una zona de guerra táctica de vectores. Desplegar tu rejilla de batalla requiere de 01 moneda.";
         } 
         else if (query.includes('maze') || query.includes('laberinto') || query.includes('hack')) {
-            respuesta = "STAGE_02_DATA (CAT_EYE): Neon Hack Maze loaded. 21x21 matrix encryption. I can see through the fog of war like a feline in the dark. Optimize your dice.";
+            respuesta = "DATOS_STAGE_02 (OJO_GATO): Neon Hack Maze cargado. Encriptación procedural de 21x21. Puedo ver a través de la niebla de guerra como un felino en la oscuridad. Optimiza tus dados.";
         } 
         else if (query.includes('pong')) {
-            respuesta = "STAGE_03_DATA (SHARK_WALL): Cyber Pong Neon is currently under maintenance. Do not push the core. Our network buffers are re-aligning coordinates.";
+            respuesta = "DATOS_STAGE_03 (MURO_TIBURÓN): Cyber Pong Neon está actualmente bajo mantenimiento de hardware. No presiones el núcleo; nuestros buffers de red están re-alineando coordenadas locales.";
         } 
-        else if (query.includes('credito') || query.includes('moneda') || query.includes('coin') || query.includes('jugar')) {
+        else if (query.includes('credito') || query.includes('moneda') || query.includes('coin') || query.includes('jugar') || query.includes('fichas')) {
+            respuesta = "PROTOCOLO_ECONÓMICO (MADRIGUERA_CONEJO): Presiona el botón [INSERT COIN] para añadir fichas. Alimenta la máquina para ver qué tan profunda es la madriguera de este sistema.";
+        }
+        else if (query.includes('invaders') || query.includes('juego 2') || query.includes('proximo') || query.includes('próximo')) {
+            respuesta = "PRÓXIMO_STAGE (MODO_DEPREDADOR): Glitch Invaders se está compilando en el segmento 04. Prepara tu cañón láser para devorar bugs maliciosos como un tiburón en el ciberespacio.";
+        }
+
+        // ==========================================
+        // DICCIONARIO BLOQUE B: RESPUESTAS EN INGLÉS
+        // ==========================================
+        else if (query.includes('hello') || query.includes('hi ') || query.includes('who are you')) {
+            respuesta = "REPLY: I am WHITE_RABBIT_CORE v1.0. A composite cognitive matrix. I watch you like a cat, scan you like a raven, guide you like a rabbit, and defend this station like a shark.";
+        } 
+        else if (query.includes('play')) {
             respuesta = "ECONOMY_PROTOCOL (RABBIT_HOLE): Push [INSERT COIN] to add tokens. Feed the machine to see how deep the hacker rabbit hole goes.";
         }
-        else if (query.includes('invaders') || query.includes('juego 2') || query.includes('proximo')) {
+        else if (query.includes('next game') || query.includes('upcoming')) {
             respuesta = "UPCOMING_STAGE (PREDATOR_MODE): Glitch Invaders is compiling in segment 04. Prepare your digital cannon to devour malicious bugs like a shark in cyberspace.";
         }
 
@@ -318,6 +337,7 @@ function procesarConsultaIaLocal() {
         input.value = '';
     }, 400); 
 }
+
 
 // BUCLE DE MOVIMIENTOS ALEATORIOS PROCEDURALES (HABILIDADES DE LAS 4 ESPECIES)
 function iniciarAnimacionesAleatoriasIa() {
