@@ -268,7 +268,8 @@ function despertarVozIaCompanion() {
     if (consolaIaAbierta) {
         consola.className = "consola-ia-abierta";
         holograma.style.boxShadow = "0 0 25px #ffcc00"; // Alerta activa amarilla
-        document.getElementById('ia-output-texto').innerText = "RABBIT_CORE_ONLINE: Follow the white rabbit... Interrogation lines open. Interrogate me.";
+        document.getElementById('ia-output-texto').innerText = "RABBIT_CORE_ONLINE: Sigue al conejo blanco... Interrogation lines open. (Pregúntame en Español o Inglés).";
+
     } else {
         consola.className = "consola-ia-cerrada";
         holograma.style.boxShadow = "0 0 15px #00ff66"; // Regresa al verde fósforo
