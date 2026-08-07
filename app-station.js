@@ -1,13 +1,18 @@
 // ===================================================
 // 1. PROTOCOLO DE AUDIO NATIVO Y ECONOMÍA DE CRÉDITOS
 // ===================================================
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+// CONFIGURACIÓN CENTRAL DE BASE DE DATOS GLOBAL REAL DE GOOGLE (URL EXACTA DE TU PROYECTO)
+const URL_FIREBASE_NUBE = "https://firebaseio.com";
+
+// REPARADO: Candado de seguridad para evitar errores de identificador ya declarado
+if (typeof window.audioCtx === 'undefined') {
+    window.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+}
+const audioCtx = window.audioCtx;
 let osciladorAmbiente = null;
 let tieneCredito = false;
 let contadorCreditosTotales = 0; 
-
-// CONFIGURACIÓN CENTRAL DE BASE DE DATOS GLOBAL REAL DE GOOGLE (DIRECCIÓN OFICIAL CON EXTENSIÓN)
-const URL_FIREBASE_NUBE = "https://firebaseio.com";
 
 // Efecto de sonido retro "¡Clink!" de moneda + activación de la cabina
 function insertarMoneda() {
