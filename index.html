@@ -42,7 +42,10 @@
 
     <!-- VENTANA EMERGENTE (MODAL): REGISTRO DE PERFIL PILOTO -->
     <div id="modal-perfil-arcade" class="modal-neon oculto">
-      <div class="modal-contenido">
+      <div class="modal-contenido" style="position: relative;">
+        <!-- BOTÓN DE CIERRE [X] INYECTADO EN LA ESQUINA -->
+        <button class="btn-terminal-mini" style="position: absolute; top: 15px; right: 15px; color: #ff0055; font-size: 0.9rem;" onclick="cerrarPanelPerfilPiloto()">[X]</button>
+
         <h3 class="subtitulo-arcade">&gt;&gt; ACCESS_REQUISITION: PILOT REGISTRATION</h3>
         <div class="campo-formulario">
           <label for="input-perfil-alias">ENTER PROTOCOL ALIAS:</label>
@@ -60,6 +63,7 @@
         <button class="btn-modo-arcade" onclick="guardarPerfilPilotoLocal()">💾 CONFIRM PROTOCOL</button>
       </div>
     </div>
+
 
     <!-- VENTANA EMERGENTE SECRETA: LOGIN DE ADMINISTRADOR -->
     <div id="modal-login-admin" class="modal-neon oculto">
@@ -173,7 +177,8 @@
 
   </div>
 
-  <script src="app-station.js?v=6.0"></script>
+  <script src="app-station.js?v=7.0"></script>
+
 
 </body>
 </html>
