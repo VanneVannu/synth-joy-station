@@ -116,13 +116,17 @@
     <main id="panel-core-admin" class="oculto" style="display: flex; flex-direction: column; gap: 20px;">
       <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ffcc00; padding-bottom: 10px;">
         <h2 style="color: #ffcc00; font-size: 1.8rem; text-shadow: 0 0 10px #ffcc00;">🖥️ SYSTEM_CORE: INCOMING TRANSMISSIONS</h2>
-        <button class="btn-modo-arcade" style="border-color: #ff0055; color: #ff0055;" onclick="cerrarPanelAdministradorGlobal()">[CLOSE CONSOLE]</button>
+        <div style="display: flex; gap: 10px;">
+          <!-- BOTÓN DE REFRESCO EN CALIENTE INYECTADO -->
+          <button class="btn-modo-arcade" style="border-color: #00ff66; color: #00ff66;" onclick="descargarMensajesDesdeNubeGlobal()">🔄 REFRESH DATA</button>
+          <button class="btn-modo-arcade" style="border-color: #ff0055; color: #ff0055;" onclick="cerrarPanelAdministradorGlobal()">[CLOSE CONSOLE]</button>
+        </div>
       </div>
       <div id="contenedor-mensajes-nube" style="background: #08030f; border: 1px solid #ffcc00; border-radius: 6px; min-height: 300px; max-height: 450px; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px;">
-        <!-- Aquí se descargarán en tiempo real los mensajes enviados desde cualquier PC del mundo -->
         <div style="color: rgba(255,204,0,0.5); font-family: monospace;">[SYSTEM]: Downloading global data streams...</div>
       </div>
     </main>
+
 
     <!-- COMPAÑERO COGNITIVO IA (WHITE RABBIT CORE) -->
     <div id="ia-companion-container">
@@ -169,7 +173,8 @@
 
   </div>
 
-  <script src="app-station.js?v=5.0"></script>
+  <script src="app-station.js?v=6.0"></script>
+
 </body>
 </html>
 
