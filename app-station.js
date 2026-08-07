@@ -3,7 +3,7 @@
 // ===================================================
 
 // CONFIGURACIÓN CENTRAL DE BASE DE DATOS GLOBAL REAL DE GOOGLE (URL EXACTA DE TU PROYECTO)
-const URL_FIREBASE_NUBE = "https://synth-joy-station-default-rtdb.firebaseio.com/";
+const URL_FIREBASE_NUBE = "https://synth-joy-station-default-rtdb.firebaseio.com";
 
 // REPARADO: Candado de seguridad para evitar errores de identificador ya declarado
 if (typeof window.audioCtx === 'undefined') {
