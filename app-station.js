@@ -286,6 +286,7 @@ function inyectarOpinionNubeGlobal() {
 }
 
 
+
 // ===================================================
 // 4. SECCIÓN A: PUERTA SECRETA ARCADE Y ASISTENTE IA BILINGÜE
 // ===================================================
@@ -429,14 +430,13 @@ function descargarMensajesDesdeNubeGlobal() {
         .then(dataObjeto => {
             contenedor.innerHTML = "";
             
-            // Si la base de datos está vacía, mostramos el mensaje de sistema
-            if (!dataObjeto) {
-                contenedor.innerHTML = `<div style="color: rgba(255,255,255,0.4); font-family: monospace;">[EMPTY]: No transmissions detected in this node yet.</div>`;
+            // REPARADO: Si la base de datos está totalmente vacía de fábrica (null), evitamos el quiebre de código
+            if (!dataObjeto || typeof dataObjeto !== 'object') {
+                contenedor.innerHTML = `<div style="color: rgba(255,255,255,0.4); font-family: monospace;">[EMPTY]: No transmissions detected in this node yet. Write a suggestion below to create the global stream!</div>`;
                 return;
             }
 
-            // Como Firebase devuelve los elementos en formato de Objeto de Objetos,
-            // los convertimos en un Array para poder recorrerlos limpiamente
+            // Convertimos el mapa de objetos de Firebase en un Array indexado
             const listaMensajes = Object.values(dataObjeto);
 
             // Ordenamos cronológicamente para que los reportes más recientes salgan al final
@@ -444,7 +444,7 @@ function descargarMensajesDesdeNubeGlobal() {
 
             // Recorremos el historial descargado y dibujamos las tarjetas neón amarillas
             listaMensajes.forEach((info) => {
-                if (info.mensaje) {
+                if (info && info.mensaje) {
                     const tarjeta = document.createElement('div');
                     tarjeta.style.borderBottom = "1px dashed rgba(255, 204, 0, 0.3)";
                     tarjeta.style.paddingBottom = "8px";
@@ -464,8 +464,9 @@ function descargarMensajesDesdeNubeGlobal() {
             // Auto-scrolleamos el panel hacia el fondo para ver lo último que llegó
             contenedor.scrollTop = contenedor.scrollHeight;
         })
-        .catch(() => {
-            contenedor.innerHTML = `<div style="color: #ff0055;">[ERROR]: Cloud server handshake failed. Check your Firebase rules.</div>`;
+        .catch((err) => {
+            console.error(err);
+            contenedor.innerHTML = `<div style="color: #ff0055;">[ERROR]: Cloud server handshake failed. Check your Firebase Rules tab.</div>`;
         });
 }
 
