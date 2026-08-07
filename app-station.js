@@ -6,8 +6,9 @@ let osciladorAmbiente = null;
 let tieneCredito = false;
 let contadorCreditosTotales = 0; 
 
-// CONFIGURACIÓN CENTRAL DE BASE DE DATOS GLOBAL TEMPORAL (INMUNE A CORS)
-const ID_CANAL_GLOBAL_NUBE = "SYS-STATION-FEEDBACK-LOGS-2026";
+// CONFIGURACIÓN CENTRAL DE BASE DE DATOS GLOBAL REAL DE GOOGLE (INMUNE A CORS)
+const URL_FIREBASE_NUBE = "https://synth-joy-station-default-rtdb.firebaseio.com/";
+
 
 // Efecto de sonido retro "¡Clink!" de moneda + activación de la cabina
 function insertarMoneda() {
@@ -228,7 +229,7 @@ function actualizarContadorBytes() {
     }
 }
 
-// INYECCIÓN GLOBAL: Envía el comentario por internet real a tu base de datos central
+// INYECCIÓN GLOBAL: Envía el comentario por internet real a tu base de datos de Google Firebase
 function inyectarOpinionNubeGlobal() {
     const textarea = document.getElementById('texto-feedback-usuario');
     const opinion = textarea.value.trim();
@@ -239,48 +240,44 @@ function inyectarOpinionNubeGlobal() {
         return;
     }
 
-    // Capturamos el alias y avatar actuales de la memoria del perfil
     const aliasPiloto = localStorage.getItem('arcade_pilot_name') || 'GUEST_USER';
     const avatarPiloto = localStorage.getItem('arcade_pilot_avatar') || '🦊';
     
     const ahora = new Date();
     const marcaTiempo = `[${ahora.getHours().toString().padStart(2, '0')}:${ahora.getMinutes().toString().padStart(2, '0')}:${ahora.getSeconds().toString().padStart(2, '0')}]`;
 
-    // 1. Pintamos en la consola local del monitor de inmediato (0ms de retraso visual)
+    // 1. Pintamos en la consola inferior de logs del monitor al instante (0ms lag)
     const listaLogs = document.getElementById('lista-logs-opiniones');
     const nuevoLog = document.createElement('div');
     nuevoLog.className = 'log-item user-log';
     nuevoLog.innerHTML = `<span style="color: #ffcc00;">${marcaTiempo}</span> <span style="color: #00ff66;">[${aliasPiloto}_${avatarPiloto}]:</span> ${opinion}`;
-    
     if (listaLogs) {
         listaLogs.appendChild(nuevoLog);
         listaLogs.scrollTop = listaLogs.scrollHeight;
     }
 
-    // 2. Estructuramos el paquete de datos para internet
-    const paqueteInternet = {
-        name: ID_CANAL_GLOBAL_NUBE,
-        data: {
-            piloto: aliasPiloto,
-            avatar: avatarPiloto,
-            mensaje: opinion,
-            stamp: Date.now() + "-" + Math.random().toString(36).substring(2, 5)
-        }
+    // 2. TRANSMISIÓN A GOOGLE: Estructuramos el paquete de datos
+    const paqueteFirebase = {
+        piloto: aliasPiloto,
+        avatar: avatarPiloto,
+        mensaje: opinion,
+        timestamp: marcaTiempo,
+        stampOrden: Date.now()
     };
 
-    // 3. Transmisión HTTP POST directa y cifrada hacia el nodo central de la nube
-    fetch(`https://restfulapi.dev`, {
+    // Publicamos mediante un método POST nativo directo en tu Realtime Database
+    fetch(URL_FIREBASE_NUBE, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(paqueteInternet)
+        body: JSON.stringify(paqueteFirebase)
     })
     .then(res => res.json())
     .then(() => {
-        // Tono retro exitoso de transmisión satelital completada
+        // Tono retro de transmisión completada con éxito
         sonarTonoMiniRetro(900, 0.05);
         setTimeout(() => sonarTonoMiniRetro(1200, 0.05), 50);
     })
-    .catch(e => console.log("Canal de contingencia local activo. Datos en cola."));
+    .catch(e => console.log("Guardado local activo por contingencia."));
 
     // Limpiamos el búfer y reajustamos el contador de bytes
     textarea.value = '';
@@ -420,29 +417,34 @@ function verificarAccesoAdminLocal() {
     }
 }
 
-// DESCARGA EN VIVO DESDE LA NUBE: Lee lo que otros usuarios han inyectado en internet
+// DESCARGA EN VIVO DESDE GOOGLE: Trae los reportes guardados por otros usuarios en el mundo
 function descargarMensajesDesdeNubeGlobal() {
     const contenedor = document.getElementById('contenedor-mensajes-nube');
     if (!contenedor) return;
-    contenedor.innerHTML = `<div style="color: #ffcc00; font-family: monospace;">[CONNECTING]: Fetching core database streams...</div>`;
+    contenedor.innerHTML = `<div style="color: #ffcc00; font-family: monospace;">[CONNECTING]: Fetching core database streams from Google Cloud...</div>`;
 
-    // REPARADO: Consultamos directamente el ID del canal unificado
-    fetch(`https://restfulapi.dev{ID_CANAL_GLOBAL_NUBE}`)
+    // Consultamos la URL de tu Firebase mediante una petición GET nativa
+    fetch(URL_FIREBASE_NUBE)
         .then(res => res.json())
-        .then(coleccion => {
+        .then(dataObjeto => {
             contenedor.innerHTML = "";
             
-            // Verificación estricta de datos entrantes de la API
-            if (!coleccion || coleccion.length === 0) {
+            // Si la base de datos está vacía, mostramos el mensaje de sistema
+            if (!dataObjeto) {
                 contenedor.innerHTML = `<div style="color: rgba(255,255,255,0.4); font-family: monospace;">[EMPTY]: No transmissions detected in this node yet.</div>`;
                 return;
             }
 
-            // Recorremos la base de datos distribuida
-            coleccion.forEach((item) => {
-                // REPARADO: Acceso de doble envoltorio estricto de la API (item.data.data)
-                if (item.data && item.data.data && item.data.data.mensaje) {
-                    const info = item.data.data; // Capturamos el sub-nodo real enviado
+            // Como Firebase devuelve los elementos en formato de Objeto de Objetos,
+            // los convertimos en un Array para poder recorrerlos limpiamente
+            const listaMensajes = Object.values(dataObjeto);
+
+            // Ordenamos cronológicamente para que los reportes más recientes salgan al final
+            listaMensajes.sort((a, b) => (a.stampOrden || 0) - (b.stampOrden || 0));
+
+            // Recorremos el historial descargado y dibujamos las tarjetas neón amarillas
+            listaMensajes.forEach((info) => {
+                if (info.mensaje) {
                     const tarjeta = document.createElement('div');
                     tarjeta.style.borderBottom = "1px dashed rgba(255, 204, 0, 0.3)";
                     tarjeta.style.paddingBottom = "8px";
@@ -451,22 +453,19 @@ function descargarMensajesDesdeNubeGlobal() {
                     tarjeta.style.fontSize = "0.85rem";
                     tarjeta.style.color = "#fff";
                     
-                    // Formateamos la hora si está disponible
                     tarjeta.innerHTML = `
-                        <span style="color: #ffcc00; font-weight: bold;">[PILOTO]: ${info.piloto || 'ANÓNIMO'} ${info.avatar || ''}</span><br>
+                        <span style="color: #ffcc00; font-weight: bold;">${info.timestamp || ''} [PILOTO]: ${info.piloto} ${info.avatar}</span><br>
                         <span style="color: #00ff66;">[MSG]:</span> ${info.mensaje}
                     `;
                     contenedor.appendChild(tarjeta);
                 }
             });
-
-            // Si después de filtrar el envoltorio el panel quedó vacío
-            if (contenedor.innerHTML === "") {
-                contenedor.innerHTML = `<div style="color: rgba(255,255,255,0.4); font-family: monospace;">[EMPTY]: No valid messages found in this data segment.</div>`;
-            }
+            
+            // Auto-scrolleamos el panel hacia el fondo para ver lo último que llegó
+            contenedor.scrollTop = contenedor.scrollHeight;
         })
         .catch(() => {
-            contenedor.innerHTML = `<div style="color: #ff0055;">[ERROR]: Cloud node unreachable. Check firewall.</div>`;
+            contenedor.innerHTML = `<div style="color: #ff0055;">[ERROR]: Cloud server handshake failed. Check your Firebase rules.</div>`;
         });
 }
 
