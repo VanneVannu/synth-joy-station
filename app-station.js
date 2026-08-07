@@ -286,7 +286,6 @@ function inyectarOpinionNubeGlobal() {
 }
 
 
-
 // ===================================================
 // 4. SECCIÓN A: PUERTA SECRETA ARCADE Y ASISTENTE IA BILINGÜE
 // ===================================================
@@ -430,13 +429,13 @@ function descargarMensajesDesdeNubeGlobal() {
         .then(dataObjeto => {
             contenedor.innerHTML = "";
             
-            // REPARADO: Si la base de datos está totalmente vacía de fábrica (null), evitamos el quiebre de código
+            // Si la base de datos está totalmente vacía en Google (devuelve null o undefined)
             if (!dataObjeto || typeof dataObjeto !== 'object') {
-                contenedor.innerHTML = `<div style="color: rgba(255,255,255,0.4); font-family: monospace;">[EMPTY]: No transmissions detected in this node yet. Write a suggestion below to create the global stream!</div>`;
+                contenedor.innerHTML = `<div style="color: rgba(255,255,255,0.4); font-family: monospace;">[EMPTY]: No transmissions detected in this node yet. Write a suggestion below to activate the stream!</div>`;
                 return;
             }
 
-            // Convertimos el mapa de objetos de Firebase en un Array indexado
+            // Convertimos el mapa de objetos de Firebase en un Array indexado de forma segura
             const listaMensajes = Object.values(dataObjeto);
 
             // Ordenamos cronológicamente para que los reportes más recientes salgan al final
@@ -466,9 +465,10 @@ function descargarMensajesDesdeNubeGlobal() {
         })
         .catch((err) => {
             console.error(err);
-            contenedor.innerHTML = `<div style="color: #ff0055;">[ERROR]: Cloud server handshake failed. Check your Firebase Rules tab.</div>`;
+            contenedor.innerHTML = `<div style="color: #ff0055;">[ERROR]: Cloud server handshake failed. Ensure you published the True/True Rules on Firebase.</div>`;
         });
 }
+
 
 function cerrarPanelAdministradorGlobal() {
     document.getElementById('panel-core-admin').classList.add('oculto');
