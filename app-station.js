@@ -212,6 +212,15 @@ function sonarTonoMiniRetro(frecuencia, duracion) {
 // Ejecutamos la revisión de memoria en cuanto el archivo se monta en la cabina
 setTimeout(verificarPerfilAlCargarPagina, 200);
 
+// Cierra la ventana emergente de perfil si el jugador decide abortar el registro
+function cerrarPanelPerfilPiloto() {
+    const modal = document.getElementById('modal-perfil-arcade');
+    if (modal) {
+        modal.classList.add('oculto');
+        sonarTonoMiniRetro(300, 0.05); // Pitido rápido de cancelación
+    }
+}
+
 
 // ===================================================
 // 3. TERMINAL DE FEEDBACK TRANSMITIDA REAL A LA NUBE
@@ -409,7 +418,7 @@ function verificarAccesoAdminLocal() {
     
     if (password === "admin123") {
         sonarTonoMiniRetro(800, 0.1);
-        setTimeout(() => sonarTonoMiniRetro(1100, 0.15), 100);
+        setTimeout(() => sonarTonoRetro(1100, 0.15), 100);
         
         document.getElementById('modal-login-admin').classList.add('oculto');
         document.getElementById('rejilla-canales').classList.add('oculto');
@@ -418,14 +427,18 @@ function verificarAccesoAdminLocal() {
         // Desplegamos el panel oculto del Administrador
         document.getElementById('panel-core-admin').classList.remove('oculto');
         
+        // REPARADO: Ocultamos el botón [MOD_ID] para que no estorbe ni pise el texto '1UP'
+        const btnModId = document.querySelector('.btn-terminal-mini');
+        if (btnModId) btnModId.style.display = 'none';
+        
         // CAMBIO DE AUTORIDAD EN EL HUD: Respaldamos tu alias y mutamos la marquesina
         const elementoHUD = document.getElementById('label-pilot-name');
         if (elementoHUD) {
-            window.respaldoAliasPilotoViejo = elementoHUD.innerText; // Guardamos "FOXXIE 🦊"
+            window.respaldoAliasPilotoViejo = elementoHUD.innerText; // Guardamos tu alias previo
             
-            // Inyectamos el rol con máxima autoridad y cambiamos el estilo visual temporalmente
+            // Inyectamos el rol con máxima autoridad y cambiamos el estilo visual
             elementoHUD.innerText = "ROOT_ADMIN // 👑";
-            elementoHUD.style.color = "#ffcc00"; // Cambia a amarillo de advertencia del sistema
+            elementoHUD.style.color = "#ffcc00"; // Amarillo eléctrico de advertencia
             elementoHUD.style.textShadow = "0 0 10px #ffcc00";
         }
         
@@ -523,15 +536,18 @@ function cerrarPanelAdministradorGlobal() {
     document.getElementById('seccion-feedback-gabinete').classList.remove('oculto');
     document.getElementById('input-pass-admin').value = '';
     
+    // REPARADO: Devolvemos la visibilidad al botón [MOD_ID] para los usuarios comunes
+    const btnModId = document.querySelector('.btn-terminal-mini');
+    if (btnModId) btnModId.style.display = 'inline-block';
+    
     // RESTAURACIÓN DE AUTORIDAD: Devolvemos el control al piloto original
     const elementoHUD = document.getElementById('label-pilot-name');
     if (elementoHUD && window.respaldoAliasPilotoViejo) {
-        elementoHUD.innerText = window.respaldoAliasPilotoViejo; // Restaura "FOXXIE 🦊"
+        elementoHUD.innerText = window.respaldoAliasPilotoViejo; // Restaura tus datos
         elementoHUD.style.color = "#00ff66"; // Regresa a su color verde neón original
         elementoHUD.style.textShadow = "0 0 8px rgba(0, 255, 102, 0.5)";
     }
 }
-
 
 // ANIMACIONES INTEGRALES DE LAS 4 ESPECIES PARA EL CONEJO VIVO
 function iniciarAnimacionesAleatoriasIa() {
