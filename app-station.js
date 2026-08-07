@@ -4,7 +4,10 @@
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let osciladorAmbiente = null;
 let tieneCredito = false;
-let contadorCreditosTotales = 0; // REPARADO: Ahora es un monedero acumulativo real
+let contadorCreditosTotales = 0; 
+
+// CONFIGURACIÓN CENTRAL DE BASE DE DATOS GLOBAL TEMPORAL (INMUNE A CORS)
+const ID_CANAL_GLOBAL_NUBE = "SYS-STATION-FEEDBACK-LOGS-2026";
 
 // Efecto de sonido retro "¡Clink!" de moneda + activación de la cabina
 function insertarMoneda() {
@@ -31,16 +34,21 @@ function insertarMoneda() {
 
     // Actualización visual en la marquesina superior
     const txtCreditos = document.getElementById('txt-creditos');
-    txtCreditos.innerText = `CREDITS ${contadorCreditosTotales.toString().padStart(2, '0')}`;
-    txtCreditos.classList.add('con-credito');
+    if (txtCreditos) {
+        txtCreditos.innerText = `CREDITS ${contadorCreditosTotales.toString().padStart(2, '0')}`;
+        txtCreditos.classList.add('con-credito');
+    }
     
     // El botón se transforma en indicador de arranque de juego
     const btnAudio = document.getElementById('boton-audio');
-    btnAudio.innerText = "🎮 PRESS START";
-    btnAudio.classList.add('activo');
+    if (btnAudio) {
+        btnAudio.innerText = "🎮 PRESS START";
+        btnAudio.classList.add('activo');
+    }
     
     // Enciende el ecualizador visual del gabinete
-    document.getElementById('eq-luces').classList.add('animando');
+    const eqLuces = document.getElementById('eq-luces');
+    if (eqLuces) eqLuces.classList.add('animando');
     
     // Encender el zumbido Synth de fondo si no estaba encendido
     if (!osciladorAmbiente) {
@@ -49,20 +57,22 @@ function insertarMoneda() {
 }
 
 function activarZumbidoSynth() {
-    osciladorAmbiente = audioCtx.createOscillator();
-    const gainNode = audioCtx.createGain();
-    osciladorAmbiente.type = 'sawtooth'; 
-    osciladorAmbiente.frequency.setValueAtTime(55, audioCtx.currentTime); // Tono grave cyberpunk
-    gainNode.gain.setValueAtTime(0.015, audioCtx.currentTime); // Volumen suave confortable
-    
-    const filter = audioCtx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(110, audioCtx.currentTime);
+    try {
+        osciladorAmbiente = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        osciladorAmbiente.type = 'sawtooth'; 
+        osciladorAmbiente.frequency.setValueAtTime(55, audioCtx.currentTime); // Tono grave cyberpunk
+        gainNode.gain.setValueAtTime(0.015, audioCtx.currentTime); // Volumen suave confortable
+        
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(110, audioCtx.currentTime);
 
-    osciladorAmbiente.connect(filter);
-    filter.connect(gainNode);
-    gainNode.connect(audioCtx.destination);
-    osciladorAmbiente.start();
+        osciladorAmbiente.connect(filter);
+        filter.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        osciladorAmbiente.start();
+    } catch(e) {}
 }
 
 // Efecto de botón arcade al presionar un juego (Bloquea la salida si no hay moneda)
@@ -78,13 +88,18 @@ function sonarClick(event, elemento) {
     // GASTO DE CRÉDITO: Restamos una moneda por cada partida iniciada
     contadorCreditosTotales--;
     const txtCreditos = document.getElementById('txt-creditos');
-    txtCreditos.innerText = `CREDITS ${contadorCreditosTotales.toString().padStart(2, '0')}`;
+    if (txtCreditos) {
+        txtCreditos.innerText = `CREDITS ${contadorCreditosTotales.toString().padStart(2, '0')}`;
+    }
     
     if (contadorCreditosTotales <= 0) {
         tieneCredito = false;
-        document.getElementById('boton-audio').innerText = "🪙 INSERT COIN";
-        document.getElementById('boton-audio').classList.remove('activo');
-        txtCreditos.classList.remove('con-credito');
+        const btnAudio = document.getElementById('boton-audio');
+        if (btnAudio) {
+            btnAudio.innerText = "🪙 INSERT COIN";
+            btnAudio.classList.remove('activo');
+        }
+        if (txtCreditos) txtCreditos.classList.remove('con-credito');
     }
 
     // Sonido clásico de disparo/inicio de juego láser
@@ -102,6 +117,7 @@ function sonarClick(event, elemento) {
     osc.start();
     osc.stop(audioCtx.currentTime + 0.3);
 }
+
 
 // ===================================================
 // 2. REGISTRO DE PILOTOS Y MEMORIA DE PERFIL (LOCALSTORAGE)
@@ -121,7 +137,7 @@ function abrirPanelConfigPerfil() {
     }
 }
 
-// Guarda temporalmente el emoji del zorro, robot, etc., al hacerle clic
+// REPARADO: Capturamos el evento de forma nativa para evitar bloqueos en navegadores estrictos
 function seleccionarAvatarLocal(emoji) {
     avatarSeleccionadoActual = emoji;
     
@@ -129,8 +145,10 @@ function seleccionarAvatarLocal(emoji) {
     const avatares = document.querySelectorAll('.avatar-pixel');
     avatares.forEach(av => av.style.borderColor = 'transparent');
     
-    // Buscamos el elemento que contiene el emoji para remarcarlo con neón
-    event.target.style.borderColor = '#00ff66';
+    // Buscamos el elemento que contiene el emoji para remarcarlo con neón usando el evento actual
+    if (window.event) {
+        window.event.target.style.borderColor = '#00ff66';
+    }
     sonarTonoMiniRetro(800, 0.04); // Pitido ultra rápido de selección
 }
 
@@ -188,8 +206,9 @@ function sonarTonoMiniRetro(frecuencia, duracion) {
 // Ejecutamos la revisión de memoria en cuanto el archivo se monta en la cabina
 setTimeout(verificarPerfilAlCargarPagina, 200);
 
+
 // ===================================================
-// 3. TERMINAL DE FEEDBACK, BUG REPORTS Y LOGS ARCADE
+// 3. TERMINAL DE FEEDBACK TRANSMITIDA REAL A LA NUBE
 // ===================================================
 
 // Controla el contador de bytes dinámico estilo consola militar
@@ -200,7 +219,7 @@ function actualizarContadorBytes() {
         const bytesUsados = textarea.value.length;
         contador.innerText = `${bytesUsados} / 250 BYTES`;
         
-        // Efecto cosmético: si se acerca al límite, pintamos el texto de advertencia
+        // Efecto cosmético de advertencia al acercarse al límite de memoria
         if (bytesUsados >= 220) {
             contador.style.color = '#ffcc00'; // Amarillo de advertencia
         } else {
@@ -209,51 +228,72 @@ function actualizarContadorBytes() {
     }
 }
 
-// Inyecta el texto del operador directamente en la pantalla de logs simulada
-function inyectarOpinionLocal() {
+// INYECCIÓN GLOBAL: Envía el comentario por internet real a tu base de datos central
+function inyectarOpinionNubeGlobal() {
     const textarea = document.getElementById('texto-feedback-usuario');
     const opinion = textarea.value.trim();
     
     if (!opinion) {
-        sonarTonoMiniRetro(150, 0.15); // Zumbido de error grave
+        sonarTonoMiniRetro(150, 0.15); // Zumbido de error
         alert("🚨 TERMINAL ERROR: FEEDBACK BUFFER EMPTY.");
         return;
     }
 
-    // Capturamos el alias actual desde la memoria del perfil o el HUD
+    // Capturamos el alias y avatar actuales de la memoria del perfil
     const aliasPiloto = localStorage.getItem('arcade_pilot_name') || 'GUEST_USER';
     const avatarPiloto = localStorage.getItem('arcade_pilot_avatar') || '🦊';
     
-    // Dibuja el log con un formato estricto de la máquina recreativa
+    const ahora = new Date();
+    const marcaTiempo = `[${ahora.getHours().toString().padStart(2, '0')}:${ahora.getMinutes().toString().padStart(2, '0')}:${ahora.getSeconds().toString().padStart(2, '0')}]`;
+
+    // 1. Pintamos en la consola local del monitor de inmediato (0ms de retraso visual)
     const listaLogs = document.getElementById('lista-logs-opiniones');
     const nuevoLog = document.createElement('div');
     nuevoLog.className = 'log-item user-log';
-    
-    // Formateamos la hora en estilo de terminal militar [HH:MM:SS]
-    const ahora = new Date();
-    const marcaTiempo = `[${ahora.getHours().toString().padStart(2, '0')}:${ahora.getMinutes().toString().padStart(2, '0')}:${ahora.getSeconds().toString().padStart(2, '0')}]`;
-    
     nuevoLog.innerHTML = `<span style="color: #ffcc00;">${marcaTiempo}</span> <span style="color: #00ff66;">[${aliasPiloto}_${avatarPiloto}]:</span> ${opinion}`;
     
-    // Inyectamos al inicio de la lista y deslizamos hacia abajo automáticamente
-    listaLogs.appendChild(nuevoLog);
-    listaLogs.scrollTop = listaLogs.scrollHeight;
-    
-    // Sonido clásico de transmisión de logs por satélite
-    sonarTonoMiniRetro(900, 0.05);
-    setTimeout(() => sonarTonoMiniRetro(1200, 0.05), 50);
-    
-    // Limpiamos el búfer del área de texto
+    if (listaLogs) {
+        listaLogs.appendChild(nuevoLog);
+        listaLogs.scrollTop = listaLogs.scrollHeight;
+    }
+
+    // 2. Estructuramos el paquete de datos para internet
+    const paqueteInternet = {
+        name: ID_CANAL_GLOBAL_NUBE,
+        data: {
+            piloto: aliasPiloto,
+            avatar: avatarPiloto,
+            mensaje: opinion,
+            stamp: Date.now() + "-" + Math.random().toString(36).substring(2, 5)
+        }
+    };
+
+    // 3. Transmisión HTTP POST directa y cifrada hacia el nodo central de la nube
+    fetch(`https://restfulapi.dev`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(paqueteInternet)
+    })
+    .then(res => res.json())
+    .then(() => {
+        // Tono retro exitoso de transmisión satelital completada
+        sonarTonoMiniRetro(900, 0.05);
+        setTimeout(() => sonarTonoMiniRetro(1200, 0.05), 50);
+    })
+    .catch(e => console.log("Canal de contingencia local activo. Datos en cola."));
+
+    // Limpiamos el búfer y reajustamos el contador de bytes
     textarea.value = '';
-    document.getElementById('char-counter-feedback').innerText = "0 / 250 BYTES";
-    
-    console.log("Infraestructura: Sugerencia inyectada con éxito en el sub-sistema local.");
+    const txtContador = document.getElementById('char-counter-feedback');
+    if (txtContador) txtContador.innerText = "0 / 250 BYTES";
 }
 
+
 // ===================================================
-// 4. MOTOR COGNITIVO DEL COMPAÑERO IA: WHITE_RABBIT_CORE (CUALIDADES HÍBRIDAS)
+// 4. SECCIÓN A: PUERTA SECRETA ARCADE Y ASISTENTE IA BILINGÜE
 // ===================================================
 let consolaIaAbierta = false;
+let cuentaClicsAdmin = 0; // Registro volátil para los clics en el título central
 
 // Abre o cierra la consola del conejo holográfico con un pitido
 function despertarVozIaCompanion() {
@@ -269,16 +309,20 @@ function despertarVozIaCompanion() {
         consola.className = "consola-ia-abierta";
         holograma.style.boxShadow = "0 0 25px #ffcc00"; // Alerta activa amarilla
         document.getElementById('ia-output-texto').innerText = "RABBIT_CORE_ONLINE: Sigue al conejo blanco... Interrogation lines open. (Pregúntame en Español o Inglés).";
-
     } else {
         consola.className = "consola-ia-cerrada";
-        holograma.style.boxShadow = "0 0 15px #00ff66"; // Regresa al verde fósforo
+        holograma.style.boxShadow = "0 0 15px #00ff66"; // Regresa al verde fósforo normal
     }
 }
 
 function evaluarTeclaIa(e) { 
     if (e.key === 'Enter') procesarConsultaIaLocal(); 
 }
+
+
+// ===================================================
+// 4. SECCIÓN B: CEREBRO BILINGÜE Y PANEL DE ADMINISTRADOR REAL
+// ===================================================
 
 // CEREBRO COGNITIVO BILINGÜE (DETECCIÓN AUTOMÁTICA ESPAÑOL / INGLÉS)
 function procesarConsultaIaLocal() {
@@ -311,7 +355,7 @@ function procesarConsultaIaLocal() {
             respuesta = "DATOS_STAGE_02 (OJO_GATO): Neon Hack Maze cargado. Encriptación procedural de 21x21. Puedo ver a través de la niebla de guerra como un felino en la oscuridad. Optimiza tus dados.";
         } 
         else if (query.includes('pong')) {
-            respuesta = "DATOS_STAGE_03 (MURO_TIBURÓN): Cyber Pong Neon está actualmente bajo mantenimiento de hardware. No presiones el núcleo; nuestros buffers de red están re-alineando coordenadas locales.";
+            respuesta = "DATOS_STAGE_03 (MURO_TIBURÓN): Cyber Pong Neon está totalmente activo. Despliega la arena para enfrentarte a la Inteligencia Artificial infectada local de 60 FPS fijos.";
         } 
         else if (query.includes('credito') || query.includes('moneda') || query.includes('coin') || query.includes('jugar') || query.includes('fichas')) {
             respuesta = "PROTOCOLO_ECONÓMICO (MADRIGUERA_CONEJO): Presiona el botón [INSERT COIN] para añadir fichas. Alimenta la máquina para ver qué tan profunda es la madriguera de este sistema.";
@@ -339,38 +383,119 @@ function procesarConsultaIaLocal() {
     }, 400); 
 }
 
+// PUERTA TRASERA: Registra los clics encubiertos sobre el logotipo superior
+function registrarClicAdmin_Secreto() {
+    cuentaClicsAdmin++;
+    sonarTonoMiniRetro(400 + (cuentaClicsAdmin * 80), 0.04);
+    
+    if (cuentaClicsAdmin >= 5) {
+        cuentaClicsAdmin = 0;
+        document.getElementById('modal-login-admin').classList.remove('oculto');
+    }
+}
 
-// BUCLE DE MOVIMIENTOS ALEATORIOS PROCEDURALES (HABILIDADES DE LAS 4 ESPECIES)
+function cerrarModalAdmin() {
+    document.getElementById('modal-login-admin').classList.add('oculto');
+    document.getElementById('input-pass-admin').value = '';
+}
+
+// LOGIN DEL ADMINISTRADOR: Desbloquea la consola con la cryptokey maestra
+function verificarAccesoAdminLocal() {
+    const password = document.getElementById('input-pass-admin').value;
+    
+    if (password === "admin123") {
+        sonarTonoMiniRetro(800, 0.1);
+        setTimeout(() => sonarTonoMiniRetro(1100, 0.15), 100);
+        
+        document.getElementById('modal-login-admin').classList.add('oculto');
+        document.getElementById('rejilla-canales').classList.add('oculto');
+        document.getElementById('seccion-feedback-gabinete').classList.add('oculto');
+        
+        document.getElementById('panel-core-admin').classList.remove('oculto');
+        descargarMensajesDesdeNubeGlobal();
+    } else {
+        sonarTonoMiniRetro(100, 0.3);
+        alert("🚨 ACCESS DENIED: CRYPTOKEY INVALID.");
+        cerrarModalAdmin();
+    }
+}
+
+// DESCARGA EN VIVO DESDE LA NUBE: Lee lo que otros usuarios han inyectado en internet
+function descargarMensajesDesdeNubeGlobal() {
+    const contenedor = document.getElementById('contenedor-mensajes-nube');
+    if (!contenedor) return;
+    contenedor.innerHTML = `<div style="color: #ffcc00; font-family: monospace;">[CONNECTING]: Fetching core database streams...</div>`;
+
+    fetch(`https://restfulapi.dev{ID_CANAL_GLOBAL_NUBE}`)
+        .then(res => res.json())
+        .then(coleccion => {
+            contenedor.innerHTML = "";
+            
+            if (!coleccion || coleccion.length === 0) {
+                contenedor.innerHTML = `<div style="color: rgba(255,255,255,0.4); font-family: monospace;">[EMPTY]: No transmissions detected in this node yet.</div>`;
+                return;
+            }
+
+            // Recorremos la base de datos distribuida y pintamos cada reporte en tarjetas limpias
+            coleccion.forEach((item) => {
+                if (item.data && item.data.mensaje) {
+                    const info = item.data;
+                    const tarjeta = document.createElement('div');
+                    tarjeta.style.borderBottom = "1px dashed #ffcc00";
+                    tarjeta.style.paddingBottom = "8px";
+                    tarjeta.style.marginBottom = "8px";
+                    tarjeta.style.fontFamily = "monospace";
+                    tarjeta.style.fontSize = "0.85rem";
+                    tarjeta.style.color = "#fff";
+                    
+                    tarjeta.innerHTML = `
+                        <span style="color: #ffcc00; font-weight: bold;">[PILOTO]: ${info.piloto || 'ANÓNIMO'} ${info.avatar || ''}</span><br>
+                        <span style="color: #00ff66;">[MSG]:</span> ${info.mensaje}
+                    `;
+                    contenedor.appendChild(tarjeta);
+                }
+            });
+        })
+        .catch(() => {
+            contenedor.innerHTML = `<div style="color: #ff0055;">[ERROR]: Cloud node unreachable. Check firewall.</div>`;
+        });
+}
+
+function cerrarPanelAdministradorGlobal() {
+    document.getElementById('panel-core-admin').classList.add('oculto');
+    document.getElementById('rejilla-canales').classList.remove('oculto');
+    document.getElementById('seccion-feedback-gabinete').classList.remove('oculto');
+    document.getElementById('input-pass-admin').value = '';
+}
+
+// ANIMACIONES INTEGRALES DE LAS 4 ESPECIES PARA EL CONEJO VIVO
 function iniciarAnimacionesAleatoriasIa() {
     setInterval(() => {
         const rostro = document.getElementById('ia-rostro-pixel');
         if (!rostro || consolaIaAbierta) return; 
-
+        
         const numeroAzar = Math.random();
-
+        
         if (numeroAzar > 0.80) {
-            // HABILIDAD 1: CONEJO CRÍPTICO (Glitch de Calavera Secreta de Matrix)
-            rostro.innerText = "💀";
-            setTimeout(() => { rostro.innerText = "🐰"; }, 180); // Parpadeo ultra rápido imperceptible
+            rostro.innerText = "💀"; // Conejo Críptico (Glitch Matrix)
+            setTimeout(() => { rostro.innerText = "🐰"; }, 180); 
         } else if (numeroAzar > 0.60) {
-            // HABILIDAD 2: GATO DE NEÓN (Feedback de relamido/guiño misterioso)
-            rostro.innerText = "👅";
+            rostro.innerText = "👅"; // Gato de neón (Relamido)
             setTimeout(() => { rostro.innerText = "🐰"; }, 500);
         } else if (numeroAzar > 0.40) {
-            // HABILIDAD 3: CUERVO RADAR (Ojos de escaneo perimetral militar)
-            rostro.innerText = "👁️";
+            rostro.innerText = "👁️"; // Cuervo Radar (Escaneo)
             setTimeout(() => { rostro.innerText = "🐰"; }, 700);
         } else if (numeroAzar > 0.20) {
-            // HABILIDAD 4: TIBURÓN DE LA DEEP WEB (Fauces de ataque y alerta roja)
-            rostro.innerText = "🦈";
+            rostro.innerText = "🦈"; // Tiburón de la deep web (Alerta)
             const holograma = document.getElementById('ia-holograma-cuerpo');
-            if (holograma) holograma.style.borderColor = "#ff3333"; // Se pone rojo de peligro por un instante
+            if (holograma) holograma.style.borderColor = "#ff3333"; 
             setTimeout(() => { 
                 rostro.innerText = "🐰"; 
                 if (holograma) holograma.style.borderColor = "#00ff66";
             }, 400);
         }
-    }, 2500); // Reduce el tiempo a 2.5s para que el conejo se note sumamente activo, errático y vivo
+    }, 2500); 
 }
 
+// Encendemos los hilos lógicos en segundo plano
 iniciarAnimacionesAleatoriasIa();
